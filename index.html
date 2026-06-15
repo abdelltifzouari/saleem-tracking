@@ -410,6 +410,7 @@ const T = {
   loggedOut:"Signed out",welcomeBack:"Welcome back",accCreated:"Account created — welcome!",
   fillAll:"Please fill in all required fields.",idTaken:"That Account ID is already taken.",
   invalidLogin:"Invalid Account ID or password.",offerPosted:"Offer submitted for review!",
+  editOffer:"Edit offer",confirmDelOffer:"Delete this offer? This cannot be undone.",offerUpdated:"Offer updated — sent for review",offerDeleted:"Offer deleted",
   offerApproved:"Offer approved",offerRejected:"Offer rejected",reqApproved:"Request approved",reqRejected:"Request rejected",
   productSaved:"Product saved",productDeleted:"Product deleted",addedCart:"Added to cart",season:"Season",
   treatmentsHint:"comma separated, e.g. Organic compost, Drip irrigation",loadingMsg:"Loading…",working:"Working…"
@@ -451,6 +452,7 @@ const T = {
   loggedOut:"Déconnecté",welcomeBack:"Bon retour",accCreated:"Compte créé — bienvenue !",
   fillAll:"Veuillez remplir tous les champs requis.",idTaken:"Cet identifiant est déjà pris.",
   invalidLogin:"Identifiant ou mot de passe invalide.",offerPosted:"Offre soumise pour examen !",
+  editOffer:"Modifier l'offre",confirmDelOffer:"Supprimer cette offre ? Action irréversible.",offerUpdated:"Offre mise à jour — envoyée pour examen",offerDeleted:"Offre supprimée",
   offerApproved:"Offre approuvée",offerRejected:"Offre rejetée",reqApproved:"Demande approuvée",reqRejected:"Demande rejetée",
   productSaved:"Produit enregistré",productDeleted:"Produit supprimé",addedCart:"Ajouté au panier",season:"Saison",
   treatmentsHint:"séparés par des virgules, ex. Compost bio, Goutte-à-goutte",loadingMsg:"Chargement…",working:"Traitement…"
@@ -654,12 +656,14 @@ async function renderProfile(){
 function progBar(label,val,cls){ val=Number(val)||0; return `<div class="prog"><div class="lab"><span>${label}</span><span>${val}%</span></div><div class="bar ${cls||''}"><i style="width:${val}%"></i></div></div>`; }
 
 /* ---------- ADD OFFER ---------- */
-let offerImgData='', myCrops=[];
-async function openOffer(){
+let offerImgData='', myCrops=[], editingOfferId=null, editingOffer=null;
+async function openOffer(id){
+  editingOfferId = id || null; editingOffer=null;
   offerImgData='';
   myCrops=(await all('crops')).filter(c=>c.farmer_id===current.id);
+  if(id){ editingOffer=(await all('offers')).find(x=>x.id===id && x.farmer_id===current.id)||null; if(editingOffer) offerImgData=editingOffer.img||''; }
   modal(`
-  <div class="modal-head"><h3>${t('newOffer')}</h3><button class="modal-x" onclick="closeModal()">×</button></div>
+  <div class="modal-head"><h3>${id?t('editOffer'):t('newOffer')}</h3><button class="modal-x" onclick="closeModal()">×</button></div>
   <div class="modal-body">
     <div id="offErr"></div>
     <div class="field"><label>${t('cropCode')}</label>
@@ -682,8 +686,21 @@ async function openOffer(){
   </div>
   <div class="modal-foot">
     <button class="btn ghost" onclick="closeModal()">${t('cancel')}</button>
-    <button class="btn" id="ofSubmit" onclick="submitOffer()">${t('submit')}</button>
+    <button class="btn" id="ofSubmit" onclick="submitOffer()">${id?t('save'):t('submit')}</button>
   </div>`);
+  if(editingOffer){
+    const o=editingOffer;
+    document.getElementById('ofCode').value=(o.code&&o.code!=='—')?o.code:'';
+    document.getElementById('ofName').value=o.crop||'';
+    document.getElementById('ofCat').value=o.cat||'Fruits';
+    document.getElementById('ofPrice').value=o.price;
+    document.getElementById('ofUnit').value=o.unit||'kg';
+    document.getElementById('ofQty').value=o.qty;
+    document.getElementById('ofPract').value=o.practices||'';
+    document.getElementById('ofTreat').value=arr(o.treat).join(', ');
+    document.getElementById('codeMsg').dataset.q=o.quality||'';
+    if(o.img) document.getElementById('ofPrev').innerHTML=`<img src="${o.img}">`;
+  }
 }
 function checkCode(){
   const code=document.getElementById('ofCode').value.trim();
@@ -706,12 +723,21 @@ async function submitOffer(){
   const crop=myCrops.find(x=>x.id===code);
   const treat=document.getElementById('ofTreat').value.split(',').map(s=>s.trim()).filter(Boolean);
   const btn=document.getElementById('ofSubmit'); btn.disabled=true; btn.textContent=t('working');
-  const ok=await ins('offers',{id:uid(),code:code||'—',crop:name,cat:document.getElementById('ofCat').value,
-    emoji:crop?crop.emoji:'🌾',img:offerImgData,farmer_id:current.id,farmer_name:current.name,loc:current.location,
-    price,unit:document.getElementById('ofUnit').value,qty,quality:msg.dataset.q?parseInt(msg.dataset.q):4,
-    treat,practices:document.getElementById('ofPract').value,status:'pending',created_at:nowISO()});
-  if(!ok){ btn.disabled=false; btn.textContent=t('submit'); return; }
-  closeModal(); toast(t('offerPosted'),'ok'); go('myoffers');
+  const emoji = crop? crop.emoji : (editingOffer? editingOffer.emoji : '🌾');
+  const data={code:code||'—',crop:name,cat:document.getElementById('ofCat').value,emoji,img:offerImgData,
+    loc:current.location,price,unit:document.getElementById('ofUnit').value,qty,
+    quality:msg.dataset.q?parseInt(msg.dataset.q):4,treat,practices:document.getElementById('ofPract').value,status:'pending'};
+  let ok;
+  if(editingOfferId){ ok=await upd('offers',editingOfferId,data); }
+  else { ok=await ins('offers',{id:uid(),farmer_id:current.id,farmer_name:current.name,created_at:nowISO(),...data}); }
+  if(!ok){ btn.disabled=false; btn.textContent=editingOfferId?t('save'):t('submit'); return; }
+  const wasEditing=!!editingOfferId; editingOfferId=null; editingOffer=null;
+  closeModal(); toast(wasEditing?t('offerUpdated'):t('offerPosted'),'ok'); go('myoffers');
+}
+async function deleteOffer(id){
+  if(!confirm(t('confirmDelOffer'))) return;
+  if(await del('offers',id)) toast(t('offerDeleted'));
+  go('myoffers');
 }
 
 /* ---------- MY OFFERS ---------- */
@@ -736,6 +762,10 @@ function offerMiniCard(o,b){
       <div class="loc">${esc(o.cat)} · <span class="code-chip">${esc(o.code)}</span></div>
       <div class="price">${usd(o.price)}<small>/${esc(o.unit)}</small></div>
       <div class="loc">${Number(o.qty).toLocaleString()} ${esc(o.unit)} ${t('available')}</div>
+      <div style="display:flex;gap:8px;margin-top:12px">
+        <button class="btn sm ghost" style="flex:1" onclick="openOffer('${o.id}')">${t('edit')}</button>
+        <button class="btn sm danger" style="flex:1" onclick="deleteOffer('${o.id}')">${t('del')}</button>
+      </div>
     </div></div>`;
 }
 
