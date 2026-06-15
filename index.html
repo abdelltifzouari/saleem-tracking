@@ -1,0 +1,939 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Saleem Tracking</title>
+<style>
+:root{
+  --green:#1b7a3e; --green-d:#155e30; --green-l:#e9f6ee; --green-l2:#d3ecdb;
+  --gold:#e0a526; --ink:#1d2426; --muted:#6b7a72; --line:#e2eae4;
+  --bg:#f4f8f5; --white:#fff; --red:#c0392b; --red-l:#fdeceb;
+  --amber:#b8860b; --amber-l:#fdf4e2; --blue:#2563eb;
+  --shadow:0 4px 18px rgba(20,60,35,.08); --shadow-l:0 10px 40px rgba(20,60,35,.18);
+  --radius:16px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--ink);line-height:1.5}
+.hidden{display:none!important}
+button{font-family:inherit;cursor:pointer;border:none;background:none}
+input,select,textarea{font-family:inherit;font-size:14px}
+img{max-width:100%}
+a{color:var(--green);text-decoration:none}
+
+/* ===== AUTH ===== */
+#authScreen{display:flex;min-height:100vh}
+.auth-hero{flex:1;background:linear-gradient(150deg,var(--green) 0%,var(--green-d) 100%);color:#fff;padding:54px 50px;display:flex;flex-direction:column;justify-content:center;position:relative;overflow:hidden}
+.auth-hero::after{content:"";position:absolute;right:-80px;bottom:-80px;width:340px;height:340px;border-radius:50%;background:rgba(255,255,255,.06)}
+.auth-hero::before{content:"";position:absolute;left:-60px;top:-60px;width:220px;height:220px;border-radius:50%;background:rgba(255,255,255,.05)}
+.brand{display:flex;align-items:center;gap:12px;font-size:24px;font-weight:800;letter-spacing:.5px}
+.brand .leaf{width:42px;height:42px;border-radius:12px;background:#fff;color:var(--green);display:grid;place-items:center;font-size:24px}
+.hero-tag{margin-top:8px;font-size:13px;opacity:.85;letter-spacing:3px;text-transform:uppercase}
+.hero-h{font-size:40px;font-weight:800;margin:30px 0 14px;line-height:1.15;max-width:460px;position:relative;z-index:1}
+.hero-sub{font-size:16px;opacity:.9;max-width:430px;position:relative;z-index:1}
+.pills{display:flex;flex-wrap:wrap;gap:10px;margin-top:30px;position:relative;z-index:1}
+.pill{background:rgba(255,255,255,.14);padding:8px 14px;border-radius:30px;font-size:13px;font-weight:600;backdrop-filter:blur(4px)}
+.auth-form{width:460px;max-width:46%;background:#fff;padding:48px 44px;display:flex;flex-direction:column;justify-content:center}
+.auth-form h2{font-size:26px;margin-bottom:6px}
+.auth-form .lead{color:var(--muted);margin-bottom:26px;font-size:14px}
+.role-toggle{display:flex;gap:8px;background:var(--green-l);padding:5px;border-radius:12px;margin-bottom:22px}
+.role-toggle button{flex:1;padding:10px;border-radius:9px;font-weight:700;font-size:14px;color:var(--muted);transition:.15s}
+.role-toggle button.on{background:#fff;color:var(--green);box-shadow:var(--shadow)}
+.field{margin-bottom:15px}
+.field label{display:block;font-size:13px;font-weight:600;margin-bottom:6px;color:var(--ink)}
+.field input,.field select,.field textarea{width:100%;padding:12px 14px;border:1.5px solid var(--line);border-radius:11px;background:#fbfdfb;transition:.15s}
+.field input:focus,.field select:focus,.field textarea:focus{outline:none;border-color:var(--green);background:#fff}
+.btn{background:var(--green);color:#fff;padding:13px;border-radius:11px;font-weight:700;font-size:15px;width:100%;transition:.15s}
+.btn:hover{background:var(--green-d)}
+.btn:disabled{opacity:.6;cursor:wait}
+.btn.alt{background:var(--gold)}.btn.alt:hover{filter:brightness(.93)}
+.btn.ghost{background:var(--green-l);color:var(--green)}.btn.ghost:hover{background:var(--green-l2)}
+.btn.danger{background:var(--red)}.btn.danger:hover{filter:brightness(.92)}
+.btn.sm{width:auto;padding:9px 16px;font-size:13px;border-radius:9px}
+.switch-line{text-align:center;margin-top:18px;font-size:14px;color:var(--muted)}
+.switch-line b{color:var(--green);cursor:pointer}
+.lang-mini{display:flex;gap:6px;justify-content:flex-end;margin-bottom:18px}
+.lang-mini button{padding:5px 11px;border-radius:8px;font-weight:700;font-size:12px;color:var(--muted);border:1.5px solid var(--line)}
+.lang-mini button.on{background:var(--green);color:#fff;border-color:var(--green)}
+.err{background:var(--red-l);color:var(--red);padding:10px 12px;border-radius:9px;font-size:13px;margin-bottom:14px}
+.hint{font-size:12px;color:var(--muted);margin-top:5px}
+.demo-box{margin-top:22px;background:var(--green-l);border-radius:12px;padding:14px;font-size:12.5px;color:var(--green-d)}
+.demo-box b{display:block;margin-bottom:5px;color:var(--green)}
+.demo-box code{background:#fff;padding:1px 6px;border-radius:5px;font-size:12px}
+
+/* ===== APP ===== */
+.topbar{position:sticky;top:0;z-index:50;background:#fff;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:18px;padding:0 26px;height:64px;box-shadow:0 2px 10px rgba(20,60,35,.04)}
+.topbar .brand{font-size:19px;color:var(--green)}
+.topbar .brand .leaf{width:34px;height:34px;font-size:19px;background:var(--green);color:#fff}
+.nav{display:flex;gap:4px;flex:1;flex-wrap:wrap}
+.nav button{padding:9px 14px;border-radius:9px;font-weight:600;font-size:14px;color:var(--muted);transition:.15s;white-space:nowrap}
+.nav button:hover{background:var(--green-l);color:var(--green)}
+.nav button.on{background:var(--green);color:#fff}
+.lang-switch{display:flex;gap:4px}
+.lang-switch button{padding:6px 10px;border-radius:8px;font-weight:700;font-size:12px;color:var(--muted)}
+.lang-switch button.on{background:var(--green-l);color:var(--green)}
+.cart-btn{position:relative;width:42px;height:42px;border-radius:11px;background:var(--green-l);color:var(--green);font-size:18px;display:grid;place-items:center}
+.cart-btn:hover{background:var(--green-l2)}
+.cart-count{position:absolute;top:-5px;right:-5px;background:var(--gold);color:#fff;font-size:11px;font-weight:800;min-width:19px;height:19px;border-radius:10px;display:grid;place-items:center;padding:0 4px}
+.userchip{display:flex;align-items:center;gap:10px;padding:5px 6px 5px 12px;border-radius:30px;background:var(--green-l)}
+.userchip .nm{font-size:13px;font-weight:700;line-height:1.1}
+.userchip .rl{font-size:11px;color:var(--muted);text-transform:capitalize}
+.avatar{width:36px;height:36px;border-radius:50%;background:var(--green);color:#fff;display:grid;place-items:center;font-weight:800;font-size:15px}
+.logout{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;color:var(--muted);font-size:16px}
+.logout:hover{background:#fff;color:var(--red)}
+
+#content{max-width:1180px;margin:0 auto;padding:30px 26px 70px}
+.page-head{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:14px;margin-bottom:24px}
+.page-head h1{font-size:26px}
+.page-head p{color:var(--muted);font-size:14px;margin-top:2px}
+.loading{text-align:center;padding:60px;color:var(--muted)}
+.spinner{width:34px;height:34px;border:3px solid var(--green-l);border-top-color:var(--green);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 12px}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+.grid{display:grid;gap:18px}
+.g3{grid-template-columns:repeat(auto-fill,minmax(280px,1fr))}
+.g4{grid-template-columns:repeat(auto-fill,minmax(240px,1fr))}
+.card{background:#fff;border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden}
+.card-pad{padding:18px}
+.stat-card{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow)}
+.stat-card .n{font-size:30px;font-weight:800;color:var(--green)}
+.stat-card .l{font-size:13px;color:var(--muted);margin-top:2px}
+.stat-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px;margin-bottom:24px}
+
+.badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:12px;font-weight:700}
+.b-green{background:var(--green-l);color:var(--green-d)}
+.b-gold{background:var(--amber-l);color:var(--amber)}
+.b-red{background:var(--red-l);color:var(--red)}
+.b-blue{background:#e7effe;color:var(--blue)}
+.b-grey{background:#eef2ef;color:var(--muted)}
+
+.stars{color:var(--gold);font-size:14px;letter-spacing:1px}
+.stars .off{color:#dfe6e0}
+
+.phero{background:linear-gradient(135deg,var(--green) 0%,var(--green-d) 100%);color:#fff;border-radius:var(--radius);padding:28px;display:flex;gap:24px;align-items:center;flex-wrap:wrap;box-shadow:var(--shadow);margin-bottom:24px}
+.phero .big-av{width:84px;height:84px;border-radius:22px;background:rgba(255,255,255,.18);display:grid;place-items:center;font-size:38px;font-weight:800}
+.phero h2{font-size:26px}
+.phero .meta{opacity:.9;font-size:14px;margin-top:3px}
+.phero .pbadges{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
+.phero .pill{background:rgba(255,255,255,.16)}
+.score-ring{margin-left:auto;text-align:center}
+.ring{width:96px;height:96px;border-radius:50%;display:grid;place-items:center;position:relative}
+.ring .inner{width:74px;height:74px;border-radius:50%;background:var(--green-d);display:grid;place-items:center;flex-direction:column}
+.ring .inner b{font-size:24px;line-height:1}
+.ring .inner span{font-size:10px;opacity:.85}
+
+.prog{margin:10px 0}
+.prog .lab{display:flex;justify-content:space-between;font-size:13px;margin-bottom:5px;font-weight:600}
+.bar{height:9px;background:var(--green-l);border-radius:6px;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--green);border-radius:6px;transition:width .6s}
+.bar.gold i{background:var(--gold)}
+
+.offer-img{height:158px;background:var(--green-l);display:grid;place-items:center;font-size:58px;position:relative}
+.offer-img img{width:100%;height:100%;object-fit:cover}
+.offer-img .q{position:absolute;top:10px;left:10px;background:rgba(255,255,255,.95);padding:4px 9px;border-radius:20px;font-size:12px;font-weight:700;color:var(--amber)}
+.offer-body{padding:15px}
+.offer-body h3{font-size:16px}
+.offer-body .loc{font-size:12.5px;color:var(--muted);margin:2px 0 8px}
+.offer-body .price{font-size:20px;font-weight:800;color:var(--green)}
+.offer-body .price small{font-size:12px;color:var(--muted);font-weight:500}
+.tagline{display:flex;flex-wrap:wrap;gap:5px;margin:8px 0}
+.code-chip{font-family:monospace;font-size:11px;background:var(--green-l);color:var(--green-d);padding:2px 7px;border-radius:6px}
+
+.filterbar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px}
+.filterbar button{padding:8px 15px;border-radius:30px;font-weight:600;font-size:13px;background:#fff;border:1.5px solid var(--line);color:var(--muted)}
+.filterbar button.on{background:var(--green);color:#fff;border-color:var(--green)}
+
+.empty{text-align:center;padding:60px 20px;color:var(--muted)}
+.empty .ic{font-size:54px;margin-bottom:10px}
+
+.section-title{font-size:15px;font-weight:800;margin:22px 0 12px;display:flex;align-items:center;gap:8px}
+.section-title .dot{width:9px;height:9px;border-radius:50%;background:var(--green)}
+
+.req-card{display:flex;gap:14px;align-items:center;flex-wrap:wrap}
+.req-card .info{flex:1;min-width:160px}
+.req-card .info .t{font-weight:700}
+.req-card .info .s{font-size:13px;color:var(--muted)}
+
+table.tbl{width:100%;border-collapse:collapse;font-size:14px}
+table.tbl th{text-align:left;padding:11px 12px;background:var(--green-l);color:var(--green-d);font-size:12px;text-transform:uppercase;letter-spacing:.5px}
+table.tbl td{padding:12px;border-bottom:1px solid var(--line)}
+table.tbl tr:last-child td{border-bottom:none}
+
+.prod-card .offer-img{height:130px;font-size:46px}
+.prod-card .partner{font-size:11px;color:var(--muted)}
+.qty-ctl{display:flex;align-items:center;gap:8px}
+.qty-ctl button{width:28px;height:28px;border-radius:8px;background:var(--green-l);color:var(--green);font-weight:800;font-size:16px}
+.qty-ctl input{width:48px;text-align:center;padding:6px}
+
+.modal-bg{position:fixed;inset:0;background:rgba(15,35,22,.5);backdrop-filter:blur(3px);z-index:100;display:grid;place-items:center;padding:20px}
+.modal{background:#fff;border-radius:18px;max-width:540px;width:100%;max-height:90vh;overflow:auto;box-shadow:var(--shadow-l);animation:pop .2s}
+@keyframes pop{from{transform:scale(.96);opacity:0}to{transform:scale(1);opacity:1}}
+.modal-head{padding:20px 22px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;background:#fff;z-index:2}
+.modal-head h3{font-size:19px}
+.modal-x{font-size:22px;color:var(--muted);width:34px;height:34px;border-radius:9px}
+.modal-x:hover{background:var(--green-l);color:var(--green)}
+.modal-body{padding:22px}
+.modal-foot{padding:16px 22px;border-top:1px solid var(--line);display:flex;gap:10px;position:sticky;bottom:0;background:#fff}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.kv{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px dashed var(--line);font-size:14px}
+.kv:last-child{border:none}.kv b{font-weight:700}
+.imgprev{height:150px;border:1.5px dashed var(--line);border-radius:11px;display:grid;place-items:center;color:var(--muted);font-size:13px;overflow:hidden;margin-top:6px}
+.imgprev img{width:100%;height:100%;object-fit:cover}
+
+.drawer-bg{position:fixed;inset:0;background:rgba(15,35,22,.5);z-index:100}
+.drawer{position:fixed;top:0;right:0;width:400px;max-width:92vw;height:100%;background:#fff;z-index:101;box-shadow:-8px 0 30px rgba(0,0,0,.15);display:flex;flex-direction:column;animation:slide .22s}
+@keyframes slide{from{transform:translateX(100%)}to{transform:translateX(0)}}
+.drawer .dh{padding:20px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center}
+.drawer .dh h3{font-size:18px}
+.drawer .ditems{flex:1;overflow:auto;padding:14px 20px}
+.cart-item{display:flex;gap:12px;align-items:center;padding:12px 0;border-bottom:1px solid var(--line)}
+.cart-item .em{width:46px;height:46px;border-radius:11px;background:var(--green-l);display:grid;place-items:center;font-size:24px}
+.cart-item .ci{flex:1}
+.cart-item .ci .nm{font-weight:700;font-size:14px}
+.cart-item .ci .pr{font-size:13px;color:var(--muted)}
+.cart-item .rm{color:var(--red);font-size:16px}
+.drawer .df{padding:18px 20px;border-top:1px solid var(--line)}
+.tot-row{display:flex;justify-content:space-between;font-size:14px;margin-bottom:7px;color:var(--muted)}
+.tot-row.grand{font-size:18px;font-weight:800;color:var(--ink);margin:12px 0}
+
+#toast{position:fixed;bottom:26px;left:50%;transform:translateX(-50%) translateY(120px);background:var(--ink);color:#fff;padding:13px 22px;border-radius:12px;font-weight:600;font-size:14px;z-index:200;transition:transform .3s;box-shadow:var(--shadow-l);max-width:90vw}
+#toast.show{transform:translateX(-50%) translateY(0)}
+#toast.ok{background:var(--green)} #toast.bad{background:var(--red)}
+
+/* config overlay */
+#cfg{position:fixed;inset:0;background:var(--bg);z-index:500;display:grid;place-items:center;padding:24px}
+#cfg .box{background:#fff;border-radius:18px;max-width:560px;padding:34px;box-shadow:var(--shadow-l)}
+#cfg h2{font-size:22px;margin-bottom:6px;color:var(--green)}
+#cfg p{color:var(--muted);font-size:14px;margin-bottom:14px}
+#cfg ol{margin:0 0 6px 18px;font-size:14px;line-height:1.9}
+#cfg code{background:var(--green-l);color:var(--green-d);padding:2px 7px;border-radius:6px;font-size:13px}
+
+@media(max-width:820px){
+  .auth-hero{display:none}.auth-form{width:100%;max-width:100%}
+  .userchip .nm,.userchip .rl{display:none}
+  .phero{flex-direction:column;text-align:center}.score-ring{margin:0 auto}
+}
+</style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+
+<!-- ========== AUTH SCREEN ========== -->
+<div id="authScreen">
+  <div class="auth-hero">
+    <div class="brand"><span class="leaf">🌿</span> Saleem Tracking</div>
+    <div class="hero-tag">Transparency Product Quality</div>
+    <div class="hero-h" data-t="heroH"></div>
+    <div class="hero-sub" data-t="heroSub"></div>
+    <div class="pills">
+      <span class="pill" data-t="pill1"></span><span class="pill" data-t="pill2"></span>
+      <span class="pill" data-t="pill3"></span><span class="pill" data-t="pill4"></span>
+    </div>
+  </div>
+  <div class="auth-form">
+    <div class="lang-mini">
+      <button id="amEn" class="on" onclick="setLang('en')">EN</button>
+      <button id="amFr" onclick="setLang('fr')">FR</button>
+    </div>
+    <div id="loginView">
+      <h2 data-t="welcome"></h2>
+      <p class="lead" data-t="loginLead"></p>
+      <div id="loginErr"></div>
+      <div class="field"><label data-t="accId"></label><input id="liId" placeholder="farmer_ali"></div>
+      <div class="field"><label data-t="pwd"></label><input id="liPw" type="password" placeholder="••••••••"></div>
+      <button class="btn" id="liBtn" onclick="doLogin()" data-t="signIn"></button>
+      <div class="switch-line"><span data-t="noAcc"></span> <b onclick="showSignup()" data-t="signUpNow"></b></div>
+      <div class="demo-box">
+        <b data-t="demoT"></b>
+        <span data-t="demoFarmer"></span>: <code>farmer_ali</code> &nbsp; <span data-t="demoBuyer"></span>: <code>buyer_eu</code> &nbsp; Admin: <code>saleem_admin</code>
+      </div>
+    </div>
+    <div id="signupView" class="hidden">
+      <h2 data-t="createAcc"></h2>
+      <p class="lead" data-t="signupLead"></p>
+      <div id="signErr"></div>
+      <div class="role-toggle">
+        <button id="rtFarmer" class="on" onclick="setRole('farmer')" data-t="farmer"></button>
+        <button id="rtBuyer" onclick="setRole('buyer')" data-t="buyer"></button>
+      </div>
+      <div class="field"><label data-t="fullName"></label><input id="suName" placeholder="Ali Ben Salah"></div>
+      <div class="field"><label id="suIdLabel"></label><input id="suId" placeholder="farmer_ali">
+        <div class="hint" id="suIdHint"></div></div>
+      <div class="field"><label data-t="location"></label><input id="suLoc" placeholder="Nabeul, Tunisia"></div>
+      <div class="field"><label data-t="email"></label><input id="suEmail" type="email" placeholder="you@example.com"></div>
+      <div class="field"><label data-t="pwd"></label><input id="suPw" type="password" placeholder="••••••••"></div>
+      <button class="btn" id="suBtn" onclick="doSignup()" data-t="createBtn"></button>
+      <div class="switch-line"><span data-t="haveAcc"></span> <b onclick="showLogin()" data-t="signInNow"></b></div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== APP ========== -->
+<div id="app" class="hidden">
+  <div class="topbar">
+    <div class="brand"><span class="leaf">🌿</span> Saleem</div>
+    <div class="nav" id="nav"></div>
+    <div class="lang-switch">
+      <button id="lsEn" class="on" onclick="setLang('en')">EN</button>
+      <button id="lsFr" onclick="setLang('fr')">FR</button>
+    </div>
+    <button id="cartBtn" class="cart-btn hidden" onclick="openCart()">🛒<span class="cart-count hidden" id="cartCount">0</span></button>
+    <div class="userchip">
+      <div><div class="nm" id="ucName"></div><div class="rl" id="ucRole"></div></div>
+      <div class="avatar" id="ucAv"></div>
+      <button class="logout" onclick="logout()" title="Logout">⏻</button>
+    </div>
+  </div>
+  <div id="content"></div>
+</div>
+
+<div id="modalRoot"></div>
+<div id="toast"></div>
+
+<script>
+/* ============================================================
+   ====  STEP 1: PASTE YOUR SUPABASE KEYS BETWEEN THE QUOTES ====
+   Find them in Supabase: Project Settings -> Data API (and -> API Keys)
+   ============================================================ */
+const SUPABASE_URL      = "https://YOUR-PROJECT.supabase.co";
+const SUPABASE_ANON_KEY = "YOUR-ANON-PUBLIC-KEY";
+/* ============================================================ */
+
+/* ---------- i18n ---------- */
+const T = {
+ en:{
+  heroH:"Trace every crop from Tunisian soil to the European table.",
+  heroSub:"Quality traceability and a direct export marketplace connecting farmers and buyers with full transparency.",
+  pill1:"🛰️ Crop Tracking",pill2:"🇪🇺 EU Passports",pill3:"🤝 Direct Trade",pill4:"⭐ Quality Ratings",
+  welcome:"Welcome back",loginLead:"Sign in to your Saleem account",accId:"Account ID / Username",pwd:"Password",
+  signIn:"Sign In",noAcc:"No account?",signUpNow:"Sign up",demoT:"Try these demo accounts (password: 1234)",
+  demoFarmer:"Farmer",demoBuyer:"Buyer",createAcc:"Create your account",signupLead:"Join the Saleem network",
+  farmer:"Farmer",buyer:"Buyer",fullName:"Full name",location:"Location / Region",email:"Email",createBtn:"Create account",
+  haveAcc:"Already have an account?",signInNow:"Sign in",farmerIdHint:"Your unique platform handle used to log in.",
+  buyerIdHint:"Pick a username to log in with.",username:"Username",
+  navTracking:"Saleem Tracking",navMarket:"Marketplace",navMyOffers:"My Offers",navRequests:"Received Requests",
+  navShop:"Saleem Market",navPending:"Pending Offers",navProducts:"Products",navMyReq:"My Purchase Requests",
+  cropsTracked:"Crops tracked",avgRating:"Avg crop rating",euPass:"EU passports",addOffer:"+ Add an offer",
+  currentCrop:"Current crop",cropHistory:"Crop history",treatAcc:"Treatment accomplishment",adviceFol:"Advice followed",
+  exportR:"Export readiness",noCrops:"No crops tracked yet.",generalScore:"Score",
+  newOffer:"Post a new offer",cropCode:"Crop code",checkCode:"Check",cropName:"Crop name",category:"Category",
+  priceUsd:"Price (USD)",quantity:"Quantity",unit:"Unit",photo:"Photo",practices:"Practices / description",
+  submit:"Submit offer",cancel:"Cancel",codeFound:"Crop found",codeNotFound:"No tracked crop with that code",
+  linkedQ:"Linked quality",pending:"Pending",approved:"Approved",rejected:"Rejected",
+  myOffersLead:"Track moderation of your export offers",noOffers:"You haven't posted any offers yet.",
+  reqLead:"Buyers requesting to purchase your offers",noReq:"No purchase requests yet.",
+  approve:"Approve",reject:"Reject",qtyReq:"Qty requested",total:"Total",buyerName:"Buyer",status:"Status",date:"Date",
+  shopLead:"Quality farm inputs & equipment from our partners",addCart:"Add to cart",inStock:"in stock",partner:"Partner",
+  cart:"Cart",emptyCart:"Your cart is empty",subtotal:"Subtotal",vat:"VAT (19%)",delivery:"Delivery",
+  checkout:"Checkout",orderOk:"Order confirmed!",orderRef:"Reference",keepShopping:"Keep shopping",
+  marketLead:"Approved export offers from Saleem farmers",noMarket:"No approved offers available yet.",
+  all:"All",requestBuy:"Request to Buy",viewDetails:"View details",qualityScore:"Quality score",
+  perUnit:"per unit",available:"Available",treatments:"Treatments",requestQ:"Request quantity",
+  sendReq:"Send request",reqSent:"Purchase request sent!",myReqLead:"Status of your purchase requests",
+  noMyReq:"You have not requested any offers yet.",crop:"Crop",
+  pendingLead:"Review and moderate farmer submissions",noPending:"No offers awaiting review. 🎉",
+  productsLead:"Manage Saleem Market catalog",addProduct:"+ Add product",editProduct:"Edit product",newProduct:"New product",
+  name:"Name",description:"Description",priceDt:"Price (DT)",stock:"Stock",imageUrl:"Image URL (optional)",
+  partnerName:"Partner name",save:"Save",edit:"Edit",del:"Delete",confirmDel:"Delete this product?",
+  loggedOut:"Signed out",welcomeBack:"Welcome back",accCreated:"Account created — welcome!",
+  fillAll:"Please fill in all required fields.",idTaken:"That Account ID is already taken.",
+  invalidLogin:"Invalid Account ID or password.",offerPosted:"Offer submitted for review!",
+  offerApproved:"Offer approved",offerRejected:"Offer rejected",reqApproved:"Request approved",reqRejected:"Request rejected",
+  productSaved:"Product saved",productDeleted:"Product deleted",addedCart:"Added to cart",season:"Season",
+  treatmentsHint:"comma separated, e.g. Organic compost, Drip irrigation",loadingMsg:"Loading…",working:"Working…"
+ },
+ fr:{
+  heroH:"Tracez chaque récolte du sol tunisien à la table européenne.",
+  heroSub:"Traçabilité qualité et marché d'export direct reliant agriculteurs et acheteurs en toute transparence.",
+  pill1:"🛰️ Suivi des cultures",pill2:"🇪🇺 Passeports UE",pill3:"🤝 Commerce direct",pill4:"⭐ Notes qualité",
+  welcome:"Bon retour",loginLead:"Connectez-vous à votre compte Saleem",accId:"Identifiant / Nom d'utilisateur",pwd:"Mot de passe",
+  signIn:"Se connecter",noAcc:"Pas de compte ?",signUpNow:"S'inscrire",demoT:"Comptes de démo (mot de passe : 1234)",
+  demoFarmer:"Agriculteur",demoBuyer:"Acheteur",createAcc:"Créez votre compte",signupLead:"Rejoignez le réseau Saleem",
+  farmer:"Agriculteur",buyer:"Acheteur",fullName:"Nom complet",location:"Localisation / Région",email:"E-mail",createBtn:"Créer le compte",
+  haveAcc:"Déjà un compte ?",signInNow:"Se connecter",farmerIdHint:"Votre identifiant unique pour vous connecter.",
+  buyerIdHint:"Choisissez un nom d'utilisateur pour vous connecter.",username:"Nom d'utilisateur",
+  navTracking:"Suivi Saleem",navMarket:"Marché",navMyOffers:"Mes offres",navRequests:"Demandes reçues",
+  navShop:"Saleem Market",navPending:"Offres en attente",navProducts:"Produits",navMyReq:"Mes demandes d'achat",
+  cropsTracked:"Cultures suivies",avgRating:"Note moyenne",euPass:"Passeports UE",addOffer:"+ Ajouter une offre",
+  currentCrop:"Culture actuelle",cropHistory:"Historique des cultures",treatAcc:"Traitements accomplis",adviceFol:"Conseils suivis",
+  exportR:"Prêt à l'export",noCrops:"Aucune culture suivie.",generalScore:"Score",
+  newOffer:"Publier une offre",cropCode:"Code culture",checkCode:"Vérifier",cropName:"Nom de la culture",category:"Catégorie",
+  priceUsd:"Prix (USD)",quantity:"Quantité",unit:"Unité",photo:"Photo",practices:"Pratiques / description",
+  submit:"Publier l'offre",cancel:"Annuler",codeFound:"Culture trouvée",codeNotFound:"Aucune culture avec ce code",
+  linkedQ:"Qualité liée",pending:"En attente",approved:"Approuvée",rejected:"Rejetée",
+  myOffersLead:"Suivez la modération de vos offres d'export",noOffers:"Vous n'avez publié aucune offre.",
+  reqLead:"Acheteurs souhaitant acheter vos offres",noReq:"Aucune demande d'achat.",
+  approve:"Approuver",reject:"Rejeter",qtyReq:"Qté demandée",total:"Total",buyerName:"Acheteur",status:"Statut",date:"Date",
+  shopLead:"Intrants et équipements de qualité de nos partenaires",addCart:"Ajouter",inStock:"en stock",partner:"Partenaire",
+  cart:"Panier",emptyCart:"Votre panier est vide",subtotal:"Sous-total",vat:"TVA (19%)",delivery:"Livraison",
+  checkout:"Commander",orderOk:"Commande confirmée !",orderRef:"Référence",keepShopping:"Continuer",
+  marketLead:"Offres d'export approuvées des agriculteurs Saleem",noMarket:"Aucune offre approuvée disponible.",
+  all:"Tout",requestBuy:"Demander à acheter",viewDetails:"Voir détails",qualityScore:"Score qualité",
+  perUnit:"par unité",available:"Disponible",treatments:"Traitements",requestQ:"Quantité demandée",
+  sendReq:"Envoyer la demande",reqSent:"Demande d'achat envoyée !",myReqLead:"Statut de vos demandes d'achat",
+  noMyReq:"Vous n'avez demandé aucune offre.",crop:"Culture",
+  pendingLead:"Examinez et modérez les soumissions",noPending:"Aucune offre à examiner. 🎉",
+  productsLead:"Gérez le catalogue Saleem Market",addProduct:"+ Ajouter produit",editProduct:"Modifier produit",newProduct:"Nouveau produit",
+  name:"Nom",description:"Description",priceDt:"Prix (DT)",stock:"Stock",imageUrl:"URL image (optionnel)",
+  partnerName:"Nom partenaire",save:"Enregistrer",edit:"Modifier",del:"Supprimer",confirmDel:"Supprimer ce produit ?",
+  loggedOut:"Déconnecté",welcomeBack:"Bon retour",accCreated:"Compte créé — bienvenue !",
+  fillAll:"Veuillez remplir tous les champs requis.",idTaken:"Cet identifiant est déjà pris.",
+  invalidLogin:"Identifiant ou mot de passe invalide.",offerPosted:"Offre soumise pour examen !",
+  offerApproved:"Offre approuvée",offerRejected:"Offre rejetée",reqApproved:"Demande approuvée",reqRejected:"Demande rejetée",
+  productSaved:"Produit enregistré",productDeleted:"Produit supprimé",addedCart:"Ajouté au panier",season:"Saison",
+  treatmentsHint:"séparés par des virgules, ex. Compost bio, Goutte-à-goutte",loadingMsg:"Chargement…",working:"Traitement…"
+ }
+};
+let lang = localStorage.getItem('saleem_lang') || 'en';
+const t = k => (T[lang] && T[lang][k]) || (T.en[k]) || k;
+
+function setLang(l){
+  lang=l; localStorage.setItem('saleem_lang',l);
+  ['amEn','lsEn'].forEach(id=>{const e=document.getElementById(id);if(e)e.classList.toggle('on',l==='en')});
+  ['amFr','lsFr'].forEach(id=>{const e=document.getElementById(id);if(e)e.classList.toggle('on',l==='fr')});
+  document.querySelectorAll('[data-t]').forEach(el=>{el.textContent=t(el.getAttribute('data-t'))});
+  if(current){ buildNav(); go(activePage); } else { setRole(signupRole); }
+}
+
+/* ---------- currency ---------- */
+const tnd = v => Number(v||0).toLocaleString('fr-TN',{minimumFractionDigits:3,maximumFractionDigits:3})+" DT";
+const usd = v => "$"+Number(v||0).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
+
+/* ---------- Supabase client + async data layer ---------- */
+let db=null;
+const configured = () => !/YOUR-/.test(SUPABASE_URL) && !/YOUR-/.test(SUPABASE_ANON_KEY);
+
+async function all(tbl){
+  const {data,error}=await db.from(tbl).select('*');
+  if(error){ toast(error.message,'bad'); return []; }
+  return data||[];
+}
+async function ins(tbl,row){ const {error}=await db.from(tbl).insert(row); if(error){toast(error.message,'bad');return false;} return true; }
+async function upd(tbl,id,patch){ const {error}=await db.from(tbl).update(patch).eq('id',id); if(error){toast(error.message,'bad');return false;} return true; }
+async function del(tbl,id){ const {error}=await db.from(tbl).delete().eq('id',id); if(error){toast(error.message,'bad');return false;} return true; }
+const uid = () => Date.now().toString(36)+Math.random().toString(36).slice(2,7);
+const nowISO = () => new Date().toISOString();
+const byNewest = (a,b) => String(b.created_at||'').localeCompare(String(a.created_at||''));
+
+/* ---------- helpers ---------- */
+function toast(msg,type){ const e=document.getElementById('toast'); e.textContent=msg; e.className='show '+(type||''); clearTimeout(e._t); e._t=setTimeout(()=>e.className='',2800); }
+function stars(n){ n=Number(n)||0; let s=''; for(let i=1;i<=5;i++) s+=`<span class="${i<=n?'':'off'}">★</span>`; return `<span class="stars">${s}</span>`; }
+function esc(s){ return String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+function arr(v){ return Array.isArray(v)?v:(v?JSON.parse(v):[]); }
+function busy(on){ document.body.style.cursor=on?'progress':''; }
+function showLoading(){ content().innerHTML=`<div class="loading"><div class="spinner"></div>${t('loadingMsg')}</div>`; }
+
+/* ---------- AUTH ---------- */
+let current=null, activePage='', signupRole='farmer';
+
+function showSignup(){ document.getElementById('loginView').classList.add('hidden'); document.getElementById('signupView').classList.remove('hidden'); }
+function showLogin(){ document.getElementById('signupView').classList.add('hidden'); document.getElementById('loginView').classList.remove('hidden'); }
+
+function setRole(r){
+  signupRole=r;
+  document.getElementById('rtFarmer').classList.toggle('on',r==='farmer');
+  document.getElementById('rtBuyer').classList.toggle('on',r==='buyer');
+  document.getElementById('suIdLabel').textContent = r==='farmer'? t('accId') : t('username');
+  document.getElementById('suIdHint').textContent = r==='farmer'? t('farmerIdHint') : t('buyerIdHint');
+}
+
+async function doLogin(){
+  const id=document.getElementById('liId').value.trim();
+  const pw=document.getElementById('liPw').value;
+  const err=document.getElementById('loginErr'); err.innerHTML='';
+  const btn=document.getElementById('liBtn'); btn.disabled=true; btn.textContent=t('working');
+  const {data,error}=await db.from('profiles').select('*').eq('account_id',id).maybeSingle();
+  btn.disabled=false; btn.textContent=t('signIn');
+  if(error){ err.innerHTML=`<div class="err">${esc(error.message)}</div>`; return; }
+  if(!data || data.password!==pw){ err.innerHTML=`<div class="err">${t('invalidLogin')}</div>`; return; }
+  localStorage.setItem('saleem_session',data.id);
+  enter(data);
+  toast(t('welcomeBack')+', '+data.name,'ok');
+}
+
+async function doSignup(){
+  const name=document.getElementById('suName').value.trim();
+  const id=document.getElementById('suId').value.trim();
+  const loc=document.getElementById('suLoc').value.trim();
+  const email=document.getElementById('suEmail').value.trim();
+  const pw=document.getElementById('suPw').value;
+  const err=document.getElementById('signErr'); err.innerHTML='';
+  if(!name||!id||!email||!pw){ err.innerHTML=`<div class="err">${t('fillAll')}</div>`; return; }
+  const btn=document.getElementById('suBtn'); btn.disabled=true; btn.textContent=t('working');
+  const {data:exist}=await db.from('profiles').select('id').eq('account_id',id).maybeSingle();
+  if(exist){ btn.disabled=false; btn.textContent=t('createBtn'); err.innerHTML=`<div class="err">${t('idTaken')}</div>`; return; }
+  const u={id:uid(),account_id:id,role:signupRole,name,location:loc||'—',email,password:pw,score:signupRole==='farmer'?70:0,created_at:nowISO()};
+  const ok=await ins('profiles',u);
+  btn.disabled=false; btn.textContent=t('createBtn');
+  if(!ok) return;
+  localStorage.setItem('saleem_session',u.id);
+  enter(u);
+  toast(t('accCreated'),'ok');
+}
+
+function enter(u){
+  current=u;
+  document.getElementById('authScreen').classList.add('hidden');
+  document.getElementById('app').classList.remove('hidden');
+  document.getElementById('ucName').textContent=u.name;
+  document.getElementById('ucRole').textContent=t(u.role);
+  document.getElementById('ucAv').textContent=(u.name||'?').charAt(0).toUpperCase();
+  document.getElementById('cartBtn').classList.toggle('hidden', u.role!=='farmer');
+  updateCartCount();
+  buildNav();
+  go({farmer:'tracking',buyer:'market',admin:'pending'}[u.role]);
+}
+
+async function logout(){
+  localStorage.removeItem('saleem_session'); current=null; cart=[];
+  document.getElementById('app').classList.add('hidden');
+  document.getElementById('authScreen').classList.remove('hidden');
+  showLogin();
+  toast(t('loggedOut'));
+}
+
+/* ---------- NAV ---------- */
+const NAVS={
+  farmer:[['tracking','navTracking'],['market','navMarket'],['myoffers','navMyOffers'],['requests','navRequests'],['shop','navShop']],
+  admin:[['pending','navPending'],['products','navProducts'],['market','navMarket']],
+  buyer:[['market','navMarket'],['myreq','navMyReq']]
+};
+function buildNav(){
+  const nav=document.getElementById('nav'); nav.innerHTML='';
+  (NAVS[current.role]||[]).forEach(([k,label])=>{
+    const b=document.createElement('button');
+    b.textContent=t(label); b.onclick=()=>go(k);
+    if(k===activePage) b.classList.add('on');
+    nav.appendChild(b);
+  });
+}
+async function go(key){
+  activePage=key;
+  document.querySelectorAll('#nav button').forEach((b,i)=>{
+    b.classList.toggle('on',(NAVS[current.role][i]||[])[0]===key);
+  });
+  const R={tracking:renderProfile,market:renderMarket,myoffers:renderMyOffers,requests:renderReceivedRequests,
+    shop:renderShop,pending:renderPendingOffers,products:renderProducts,myreq:renderMyPurchaseRequests};
+  showLoading();
+  try{ await (R[key]||renderProfile)(); }
+  catch(e){ content().innerHTML=`<div class="empty"><div class="ic">⚠️</div>${esc(e.message)}</div>`; }
+}
+const content=()=>document.getElementById('content');
+
+/* ---------- MODAL ---------- */
+function modal(html){ document.getElementById('modalRoot').innerHTML=`<div class="modal-bg" onclick="if(event.target===this)closeModal()"><div class="modal">${html}</div></div>`; }
+function closeModal(){ document.getElementById('modalRoot').innerHTML=''; }
+
+/* ============================================================
+   FARMER — PROFILE
+   ============================================================ */
+async function renderProfile(){
+  let crops=(await all('crops')).filter(c=>c.farmer_id===current.id);
+  const active=crops.find(c=>c.status==='active');
+  const done=crops.filter(c=>c.status==='done');
+  const euPass=crops.filter(c=>arr(c.badges).includes('EU Passport')).length;
+  const avg=crops.length? (crops.reduce((s,c)=>s+(Number(c.rating)||0),0)/crops.length).toFixed(1):'0.0';
+  const score=Number(current.score)||0;
+  content().innerHTML=`
+  <div class="phero">
+    <div class="big-av">${esc(current.name.charAt(0).toUpperCase())}</div>
+    <div>
+      <h2>${esc(current.name)}</h2>
+      <div class="meta">📍 ${esc(current.location)} · 🆔 ${esc(current.account_id)}</div>
+      <div class="pbadges">
+        <span class="pill">🌿 ${t('farmer')}</span>
+        <span class="pill">⭐ ${avg} ${t('avgRating')}</span>
+        <span class="pill">🇪🇺 ${euPass} ${t('euPass')}</span>
+      </div>
+    </div>
+    <div class="score-ring">
+      <div class="ring" style="background:conic-gradient(var(--gold) ${score*3.6}deg, rgba(255,255,255,.2) 0deg)">
+        <div class="inner"><b>${score}</b><span>${t('generalScore')}</span></div>
+      </div>
+    </div>
+  </div>
+  <div class="stat-row">
+    <div class="stat-card"><div class="n">${crops.length}</div><div class="l">${t('cropsTracked')}</div></div>
+    <div class="stat-card"><div class="n">${avg}★</div><div class="l">${t('avgRating')}</div></div>
+    <div class="stat-card"><div class="n">${euPass}</div><div class="l">${t('euPass')}</div></div>
+  </div>
+  <div class="page-head"><h1 style="font-size:20px">${t('currentCrop')}</h1>
+    <button class="btn sm" onclick="openOffer()">${t('addOffer')}</button></div>
+  ${active? `
+  <div class="card card-pad" style="margin-bottom:24px">
+    <div style="display:flex;gap:14px;align-items:center;margin-bottom:14px">
+      <div style="font-size:40px">${active.emoji||'🌾'}</div>
+      <div><div style="font-weight:800;font-size:18px">${esc(active.name)}</div>
+        <div style="color:var(--muted);font-size:13px">${t('cropCode')}: <span class="code-chip">${esc(active.id)}</span> · ${esc(active.season)}</div></div>
+      <div style="margin-left:auto">${stars(active.rating)}</div>
+    </div>
+    ${progBar(t('treatAcc'),active.treat)}${progBar(t('adviceFol'),active.advice,'gold')}${progBar(t('exportR'),active.export_pct)}
+  </div>`: `<div class="card card-pad" style="margin-bottom:24px;color:var(--muted)">${t('noCrops')}</div>`}
+  <div class="section-title"><span class="dot"></span>${t('cropHistory')}</div>
+  ${done.length? `<div class="grid g3">`+done.map(c=>`
+    <div class="card card-pad">
+      <div style="display:flex;justify-content:space-between;align-items:start"><div style="font-size:34px">${c.emoji||'🌾'}</div>${stars(c.rating)}</div>
+      <div style="font-weight:700;margin-top:6px">${esc(c.name)}</div>
+      <div class="code-chip" style="margin:4px 0 10px;display:inline-block">${esc(c.id)}</div>
+      ${progBar(t('treatAcc'),c.treat)}${progBar(t('adviceFol'),c.advice,'gold')}${progBar(t('exportR'),c.export_pct)}
+      <div class="tagline">${arr(c.badges).map(b=>`<span class="badge b-green">${esc(b)}</span>`).join('')}</div>
+    </div>`).join('')+`</div>` : `<div class="card card-pad" style="color:var(--muted)">${t('noCrops')}</div>`}`;
+}
+function progBar(label,val,cls){ val=Number(val)||0; return `<div class="prog"><div class="lab"><span>${label}</span><span>${val}%</span></div><div class="bar ${cls||''}"><i style="width:${val}%"></i></div></div>`; }
+
+/* ---------- ADD OFFER ---------- */
+let offerImgData='', myCrops=[];
+async function openOffer(){
+  offerImgData='';
+  myCrops=(await all('crops')).filter(c=>c.farmer_id===current.id);
+  modal(`
+  <div class="modal-head"><h3>${t('newOffer')}</h3><button class="modal-x" onclick="closeModal()">×</button></div>
+  <div class="modal-body">
+    <div id="offErr"></div>
+    <div class="field"><label>${t('cropCode')}</label>
+      <div style="display:flex;gap:8px"><input id="ofCode" placeholder="TN-OLV-2401" style="flex:1">
+        <button class="btn sm" style="width:auto" onclick="checkCode()">${t('checkCode')}</button></div>
+      <div id="codeMsg" class="hint"></div></div>
+    <div class="two">
+      <div class="field"><label>${t('cropName')}</label><input id="ofName"></div>
+      <div class="field"><label>${t('category')}</label>
+        <select id="ofCat"><option>Fruits</option><option>Vegetables</option><option>Grains</option><option>Herbs</option><option>Other</option></select></div>
+    </div>
+    <div class="two">
+      <div class="field"><label>${t('priceUsd')}</label><input id="ofPrice" type="number" step="0.01" placeholder="4.20"></div>
+      <div class="field"><label>${t('unit')}</label><select id="ofUnit"><option>kg</option><option>ton</option><option>box</option><option>crate</option></select></div>
+    </div>
+    <div class="field"><label>${t('quantity')}</label><input id="ofQty" type="number" placeholder="5000"></div>
+    <div class="field"><label>${t('practices')}</label><textarea id="ofPract" rows="2"></textarea></div>
+    <div class="field"><label>${t('treatments')}</label><input id="ofTreat" placeholder="${t('treatmentsHint')}"></div>
+    <div class="field"><label>${t('photo')}</label><input type="file" accept="image/*" onchange="previewImg(this)"><div class="imgprev" id="ofPrev">🖼️</div></div>
+  </div>
+  <div class="modal-foot">
+    <button class="btn ghost" onclick="closeModal()">${t('cancel')}</button>
+    <button class="btn" id="ofSubmit" onclick="submitOffer()">${t('submit')}</button>
+  </div>`);
+}
+function checkCode(){
+  const code=document.getElementById('ofCode').value.trim();
+  const c=myCrops.find(x=>x.id===code);
+  const msg=document.getElementById('codeMsg');
+  if(c){ document.getElementById('ofName').value=c.name;
+    msg.innerHTML=`<span style="color:var(--green);font-weight:700">✓ ${t('codeFound')}</span> · ${t('linkedQ')}: ${'★'.repeat(Number(c.rating)||0)} · ${t('treatAcc')} ${c.treat}%`;
+    msg.dataset.q=c.rating; msg.dataset.emoji=c.emoji||'';
+  } else { msg.innerHTML=`<span style="color:var(--red)">✕ ${t('codeNotFound')}</span>`; msg.dataset.q=''; }
+}
+function previewImg(inp){ const f=inp.files[0]; if(!f)return; const r=new FileReader(); r.onload=e=>{offerImgData=e.target.result; document.getElementById('ofPrev').innerHTML=`<img src="${offerImgData}">`;}; r.readAsDataURL(f); }
+async function submitOffer(){
+  const code=document.getElementById('ofCode').value.trim();
+  const name=document.getElementById('ofName').value.trim();
+  const price=parseFloat(document.getElementById('ofPrice').value);
+  const qty=parseInt(document.getElementById('ofQty').value);
+  const err=document.getElementById('offErr'); err.innerHTML='';
+  if(!name||!price||!qty){ err.innerHTML=`<div class="err">${t('fillAll')}</div>`; return; }
+  const msg=document.getElementById('codeMsg');
+  const crop=myCrops.find(x=>x.id===code);
+  const treat=document.getElementById('ofTreat').value.split(',').map(s=>s.trim()).filter(Boolean);
+  const btn=document.getElementById('ofSubmit'); btn.disabled=true; btn.textContent=t('working');
+  const ok=await ins('offers',{id:uid(),code:code||'—',crop:name,cat:document.getElementById('ofCat').value,
+    emoji:crop?crop.emoji:'🌾',img:offerImgData,farmer_id:current.id,farmer_name:current.name,loc:current.location,
+    price,unit:document.getElementById('ofUnit').value,qty,quality:msg.dataset.q?parseInt(msg.dataset.q):4,
+    treat,practices:document.getElementById('ofPract').value,status:'pending',created_at:nowISO()});
+  if(!ok){ btn.disabled=false; btn.textContent=t('submit'); return; }
+  closeModal(); toast(t('offerPosted'),'ok'); go('myoffers');
+}
+
+/* ---------- MY OFFERS ---------- */
+async function renderMyOffers(){
+  const offers=(await all('offers')).filter(o=>o.farmer_id===current.id).sort(byNewest);
+  const groups={pending:[],approved:[],rejected:[]};
+  offers.forEach(o=>{ if(groups[o.status]) groups[o.status].push(o); });
+  const badge={pending:'b-gold',approved:'b-green',rejected:'b-red'};
+  content().innerHTML=`
+  <div class="page-head"><div><h1>${t('navMyOffers')}</h1><p>${t('myOffersLead')}</p></div>
+    <button class="btn sm" onclick="openOffer()">${t('addOffer')}</button></div>
+  ${offers.length===0? `<div class="empty"><div class="ic">📦</div>${t('noOffers')}</div>` :
+   ['pending','approved','rejected'].map(st=>groups[st].length? `
+    <div class="section-title"><span class="dot"></span>${t(st)} (${groups[st].length})</div>
+    <div class="grid g3">${groups[st].map(o=>offerMiniCard(o,badge[st])).join('')}</div>`:'').join('')}`;
+}
+function offerMiniCard(o,b){
+  return `<div class="card">
+    <div class="offer-img">${o.img?`<img src="${o.img}">`:(o.emoji||'🌾')}<span class="q">${'★'.repeat(Number(o.quality)||0)}</span></div>
+    <div class="offer-body">
+      <div style="display:flex;justify-content:space-between;align-items:center"><h3>${esc(o.crop)}</h3><span class="badge ${b}">${t(o.status)}</span></div>
+      <div class="loc">${esc(o.cat)} · <span class="code-chip">${esc(o.code)}</span></div>
+      <div class="price">${usd(o.price)}<small>/${esc(o.unit)}</small></div>
+      <div class="loc">${Number(o.qty).toLocaleString()} ${esc(o.unit)} ${t('available')}</div>
+    </div></div>`;
+}
+
+/* ---------- RECEIVED REQUESTS ---------- */
+async function renderReceivedRequests(){
+  const reqs=(await all('purchase_requests')).filter(r=>r.farmer_id===current.id).sort(byNewest);
+  const badge={pending:'b-gold',approved:'b-green',rejected:'b-red'};
+  content().innerHTML=`
+  <div class="page-head"><div><h1>${t('navRequests')}</h1><p>${t('reqLead')}</p></div></div>
+  ${reqs.length===0? `<div class="empty"><div class="ic">📨</div>${t('noReq')}</div>` :
+   `<div class="grid" style="gap:14px">${reqs.map(r=>`
+    <div class="card card-pad req-card">
+      <div style="font-size:34px">🛒</div>
+      <div class="info"><div class="t">${esc(r.offer_crop)} · <span class="badge ${badge[r.status]}">${t(r.status)}</span></div>
+        <div class="s">${t('buyerName')}: ${esc(r.buyer_name)} · ${t('qtyReq')}: ${r.quantity} · ${t('total')}: ${usd(Number(r.price)*Number(r.quantity))}</div></div>
+      ${r.status==='pending'? `<div style="display:flex;gap:8px">
+        <button class="btn sm" onclick="approvePR('${r.id}')">${t('approve')}</button>
+        <button class="btn sm danger" onclick="rejectPR('${r.id}')">${t('reject')}</button></div>`:''}
+    </div>`).join('')}</div>`}`;
+}
+async function approvePR(id){ if(await upd('purchase_requests',id,{status:'approved'})) toast(t('reqApproved'),'ok'); go('requests'); }
+async function rejectPR(id){ if(await upd('purchase_requests',id,{status:'rejected'})) toast(t('reqRejected')); go('requests'); }
+
+/* ============================================================
+   FARMER — SHOP + CART
+   ============================================================ */
+let cart=[];
+async function renderShop(){
+  const products=await all('products');
+  content().innerHTML=`
+  <div class="page-head"><div><h1>${t('navShop')}</h1><p>${t('shopLead')}</p></div></div>
+  <div class="grid g4">${products.map(p=>`
+    <div class="card prod-card">
+      <div class="offer-img">${p.image_url?`<img src="${esc(p.image_url)}">`:(p.emoji||'📦')}</div>
+      <div class="offer-body">
+        <div class="partner">${esc(p.category)} · ${esc(p.partner_name)}</div>
+        <h3>${esc(p.name)}</h3><div class="loc">${esc(p.description||'')}</div>
+        <div class="price">${tnd(p.price)}</div><div class="loc">${p.stock_quantity} ${t('inStock')}</div>
+        <button class="btn sm" style="width:100%;margin-top:10px" onclick='addToCart(${JSON.stringify(JSON.stringify({id:p.id,name:p.name,emoji:p.emoji,price:Number(p.price)}))})'>${t('addCart')}</button>
+      </div></div>`).join('')}</div>`;
+}
+function addToCart(json){
+  const p=typeof json==='string'?JSON.parse(json):json;
+  const ex=cart.find(c=>c.id===p.id);
+  if(ex) ex.qty++; else cart.push({id:p.id,name:p.name,emoji:p.emoji,price:Number(p.price),qty:1});
+  updateCartCount(); toast(t('addedCart'),'ok');
+}
+function updateCartCount(){ const n=cart.reduce((s,c)=>s+c.qty,0); const el=document.getElementById('cartCount'); if(!el)return; el.textContent=n; el.classList.toggle('hidden',n===0); }
+function openCart(){
+  const sub=cart.reduce((s,c)=>s+c.price*c.qty,0), vat=sub*0.19, delivery=cart.length?25:0, total=sub+vat+delivery;
+  document.getElementById('modalRoot').innerHTML=`
+  <div class="drawer-bg" onclick="closeModal()"></div>
+  <div class="drawer">
+    <div class="dh"><h3>🛒 ${t('cart')}</h3><button class="modal-x" onclick="closeModal()">×</button></div>
+    <div class="ditems">${cart.length? cart.map(c=>`
+      <div class="cart-item"><div class="em">${c.emoji||'📦'}</div>
+        <div class="ci"><div class="nm">${esc(c.name)}</div><div class="pr">${tnd(c.price)} × ${c.qty}</div>
+          <div class="qty-ctl" style="margin-top:5px"><button onclick="setQty('${c.id}',-1)">−</button><span>${c.qty}</span><button onclick="setQty('${c.id}',1)">+</button></div></div>
+        <button class="rm" onclick="removeItem('${c.id}')">🗑️</button></div>`).join('') : `<div class="empty"><div class="ic">🛒</div>${t('emptyCart')}</div>`}</div>
+    ${cart.length?`<div class="df">
+      <div class="tot-row"><span>${t('subtotal')}</span><span>${tnd(sub)}</span></div>
+      <div class="tot-row"><span>${t('vat')}</span><span>${tnd(vat)}</span></div>
+      <div class="tot-row"><span>${t('delivery')}</span><span>${tnd(delivery)}</span></div>
+      <div class="tot-row grand"><span>${t('total')}</span><span>${tnd(total)}</span></div>
+      <button class="btn" onclick="checkout()">${t('checkout')}</button></div>`:''}
+  </div>`;
+}
+function setQty(id,d){ const c=cart.find(x=>x.id===id); if(!c)return; c.qty+=d; if(c.qty<1)cart=cart.filter(x=>x.id!==id); updateCartCount(); openCart(); }
+function removeItem(id){ cart=cart.filter(x=>x.id!==id); updateCartCount(); openCart(); }
+async function checkout(){
+  const sub=cart.reduce((s,c)=>s+c.price*c.qty,0), vat=sub*0.19, delivery=25, total=sub+vat+delivery;
+  const ref='SLM-'+Date.now().toString(36).toUpperCase().slice(-6);
+  const ok=await ins('orders',{id:uid(),farmer_id:current.id,ref,items:cart,subtotal:sub,vat,delivery,total,created_at:nowISO()});
+  if(!ok) return;
+  cart=[]; updateCartCount();
+  modal(`<div class="modal-body" style="text-align:center;padding:40px 30px">
+    <div style="font-size:60px">✅</div><h3 style="font-size:22px;margin:10px 0">${t('orderOk')}</h3>
+    <p style="color:var(--muted)">${t('orderRef')}: <b style="color:var(--green)">${ref}</b></p>
+    <p style="color:var(--muted);margin-top:4px">${t('total')}: <b>${tnd(total)}</b></p>
+    <button class="btn" style="margin-top:20px" onclick="closeModal()">${t('keepShopping')}</button></div>`);
+}
+
+/* ============================================================
+   BUYER / ADMIN — MARKETPLACE
+   ============================================================ */
+let marketFilter='All', MARKET=[];
+async function renderMarket(){
+  MARKET=(await all('offers')).filter(o=>o.status==='approved').sort(byNewest);
+  const cats=['All',...new Set(MARKET.map(o=>o.cat))];
+  let list = marketFilter!=='All'? MARKET.filter(o=>o.cat===marketFilter):MARKET;
+  content().innerHTML=`
+  <div class="page-head"><div><h1>${t('navMarket')}</h1><p>${t('marketLead')}</p></div></div>
+  <div class="filterbar">${cats.map(c=>`<button class="${c===marketFilter?'on':''}" onclick="setFilter('${esc(c)}')">${c==='All'?t('all'):esc(c)}</button>`).join('')}</div>
+  ${list.length? `<div class="grid g3">${list.map(o=>`
+    <div class="card" style="cursor:pointer" onclick="openDetails('${o.id}')">
+      <div class="offer-img">${o.img?`<img src="${o.img}">`:(o.emoji||'🌾')}<span class="q">★ ${Number(o.quality)||0}.0</span></div>
+      <div class="offer-body"><h3>${esc(o.crop)}</h3>
+        <div class="loc">👨‍🌾 ${esc(o.farmer_name)} · 📍 ${esc(o.loc)}</div>
+        <div class="tagline">${arr(o.treat).slice(0,2).map(x=>`<span class="badge b-green">${esc(x)}</span>`).join('')}</div>
+        <div style="display:flex;justify-content:space-between;align-items:end;margin-top:8px">
+          <div class="price">${usd(o.price)}<small>/${esc(o.unit)}</small></div>
+          <span class="code-chip">🇪🇺 ${esc(o.code)}</span></div>
+      </div></div>`).join('')}</div>`
+   : `<div class="empty"><div class="ic">🌾</div>${t('noMarket')}</div>`}`;
+}
+function setFilter(c){ marketFilter=c; renderMarket(); }
+function openDetails(id){
+  const o=MARKET.find(x=>x.id===id); if(!o)return;
+  modal(`
+  <div class="offer-img" style="height:200px;border-radius:18px 18px 0 0">${o.img?`<img src="${o.img}">`:`<span style="font-size:80px">${o.emoji||'🌾'}</span>`}<span class="q">★ ${Number(o.quality)||0}.0</span></div>
+  <div class="modal-body">
+    <div style="display:flex;justify-content:space-between;align-items:start">
+      <div><h3 style="font-size:22px">${esc(o.crop)}</h3><div class="loc">👨‍🌾 ${esc(o.farmer_name)} · 📍 ${esc(o.loc)}</div></div>
+      <span class="code-chip">🇪🇺 ${esc(o.code)}</span></div>
+    <p style="margin:14px 0;color:var(--muted)">${esc(o.practices||'')}</p>
+    <div class="kv"><span>${t('qualityScore')}</span><b>${stars(o.quality)}</b></div>
+    <div class="kv"><span>${t('perUnit')}</span><b>${usd(o.price)} / ${esc(o.unit)}</b></div>
+    <div class="kv"><span>${t('available')}</span><b>${Number(o.qty).toLocaleString()} ${esc(o.unit)}</b></div>
+    <div class="kv"><span>${t('category')}</span><b>${esc(o.cat)}</b></div>
+    <div style="margin-top:12px"><div style="font-weight:700;margin-bottom:6px">${t('treatments')}</div>
+      <div class="tagline">${arr(o.treat).map(x=>`<span class="badge b-green">${esc(x)}</span>`).join('')||'—'}</div></div>
+  </div>
+  <div class="modal-foot"><button class="btn ghost" onclick="closeModal()">${t('cancel')}</button>
+    ${current.role==='buyer'? `<button class="btn" onclick="openRequestModal('${o.id}')">${t('requestBuy')}</button>`:''}</div>`);
+}
+function openRequestModal(id){
+  const o=MARKET.find(x=>x.id===id); if(!o)return;
+  modal(`
+  <div class="modal-head"><h3>${t('requestBuy')}: ${esc(o.crop)}</h3><button class="modal-x" onclick="closeModal()">×</button></div>
+  <div class="modal-body">
+    <div class="kv"><span>${t('perUnit')}</span><b>${usd(o.price)}/${esc(o.unit)}</b></div>
+    <div class="kv"><span>${t('available')}</span><b>${Number(o.qty).toLocaleString()} ${esc(o.unit)}</b></div>
+    <div class="field" style="margin-top:14px"><label>${t('requestQ')} (${esc(o.unit)})</label>
+      <input id="rqQty" type="number" value="100" min="1" oninput="updReqTotal('${o.id}')"></div>
+    <div class="tot-row grand" id="rqTotal"><span>${t('total')}</span><span>${usd(Number(o.price)*100)}</span></div>
+  </div>
+  <div class="modal-foot"><button class="btn ghost" onclick="closeModal()">${t('cancel')}</button>
+    <button class="btn" id="rqBtn" onclick="submitOfferRequest('${o.id}')">${t('sendReq')}</button></div>`);
+}
+function updReqTotal(id){ const o=MARKET.find(x=>x.id===id); const q=parseInt(document.getElementById('rqQty').value)||0; document.getElementById('rqTotal').innerHTML=`<span>${t('total')}</span><span>${usd(Number(o.price)*q)}</span>`; }
+async function submitOfferRequest(id){
+  const o=MARKET.find(x=>x.id===id); const q=parseInt(document.getElementById('rqQty').value)||1;
+  const btn=document.getElementById('rqBtn'); btn.disabled=true; btn.textContent=t('working');
+  const ok=await ins('purchase_requests',{id:uid(),offer_id:o.id,offer_crop:o.crop,buyer_id:current.id,buyer_name:current.name,
+    farmer_id:o.farmer_id,quantity:q,price:Number(o.price),status:'pending',created_at:nowISO()});
+  if(!ok){ btn.disabled=false; btn.textContent=t('sendReq'); return; }
+  closeModal(); toast(t('reqSent'),'ok'); go('myreq');
+}
+
+/* ---------- BUYER — MY REQUESTS ---------- */
+async function renderMyPurchaseRequests(){
+  const reqs=(await all('purchase_requests')).filter(r=>r.buyer_id===current.id).sort(byNewest);
+  const profs=await all('profiles'); const nm={}; profs.forEach(p=>nm[p.id]=p.name);
+  const badge={pending:'b-gold',approved:'b-green',rejected:'b-red'};
+  content().innerHTML=`
+  <div class="page-head"><div><h1>${t('navMyReq')}</h1><p>${t('myReqLead')}</p></div></div>
+  ${reqs.length===0? `<div class="empty"><div class="ic">📋</div>${t('noMyReq')}</div>` :
+   `<div class="card" style="overflow:auto"><table class="tbl">
+     <tr><th>${t('crop')}</th><th>${t('farmer')}</th><th>${t('quantity')}</th><th>${t('total')}</th><th>${t('status')}</th><th>${t('date')}</th></tr>
+     ${reqs.map(r=>`<tr><td><b>${esc(r.offer_crop)}</b></td><td>${esc(nm[r.farmer_id]||'—')}</td>
+       <td>${r.quantity}</td><td>${usd(Number(r.price)*Number(r.quantity))}</td>
+       <td><span class="badge ${badge[r.status]}">${t(r.status)}</span></td>
+       <td>${new Date(r.created_at).toLocaleDateString()}</td></tr>`).join('')}
+   </table></div>`}`;
+}
+
+/* ============================================================
+   ADMIN — PENDING OFFERS
+   ============================================================ */
+async function renderPendingOffers(){
+  const pend=(await all('offers')).filter(o=>o.status==='pending').sort(byNewest);
+  content().innerHTML=`
+  <div class="page-head"><div><h1>${t('navPending')}</h1><p>${t('pendingLead')}</p></div></div>
+  ${pend.length===0? `<div class="empty"><div class="ic">✅</div>${t('noPending')}</div>` :
+   `<div class="grid g3">${pend.map(o=>`
+    <div class="card"><div class="offer-img">${o.img?`<img src="${o.img}">`:(o.emoji||'🌾')}<span class="q">★ ${Number(o.quality)||0}.0</span></div>
+      <div class="offer-body"><h3>${esc(o.crop)}</h3>
+        <div class="loc">👨‍🌾 ${esc(o.farmer_name)} · <span class="code-chip">${esc(o.code)}</span></div>
+        <div class="price">${usd(o.price)}<small>/${esc(o.unit)}</small> · ${Number(o.qty).toLocaleString()} ${esc(o.unit)}</div>
+        <div class="loc">${new Date(o.created_at).toLocaleDateString()}</div>
+        <div style="display:flex;gap:8px;margin-top:12px">
+          <button class="btn sm" style="flex:1" onclick="approveOffer('${o.id}')">${t('approve')}</button>
+          <button class="btn sm danger" style="flex:1" onclick="rejectOffer('${o.id}')">${t('reject')}</button></div>
+      </div></div>`).join('')}</div>`}`;
+}
+async function approveOffer(id){ if(await upd('offers',id,{status:'approved'})) toast(t('offerApproved'),'ok'); go('pending'); }
+async function rejectOffer(id){ if(await upd('offers',id,{status:'rejected'})) toast(t('offerRejected')); go('pending'); }
+
+/* ============================================================
+   ADMIN — PRODUCTS CRUD
+   ============================================================ */
+let PRODUCTS=[];
+async function renderProducts(){
+  PRODUCTS=await all('products');
+  content().innerHTML=`
+  <div class="page-head"><div><h1>${t('navProducts')}</h1><p>${t('productsLead')}</p></div>
+    <button class="btn sm" onclick="openProductModal()">${t('addProduct')}</button></div>
+  <div class="grid g4">${PRODUCTS.map(p=>`
+    <div class="card prod-card"><div class="offer-img">${p.image_url?`<img src="${esc(p.image_url)}">`:(p.emoji||'📦')}</div>
+      <div class="offer-body"><div class="partner">${esc(p.category)} · ${esc(p.partner_name)}</div>
+        <h3>${esc(p.name)}</h3><div class="price">${tnd(p.price)}</div><div class="loc">${p.stock_quantity} ${t('inStock')}</div>
+        <div style="display:flex;gap:8px;margin-top:10px">
+          <button class="btn sm ghost" style="flex:1" onclick="openProductModal('${p.id}')">${t('edit')}</button>
+          <button class="btn sm danger" style="flex:1" onclick="deleteProduct('${p.id}')">${t('del')}</button></div>
+      </div></div>`).join('')}</div>`;
+}
+function openProductModal(id){
+  const p=id? PRODUCTS.find(x=>x.id===id)||{} : {};
+  modal(`
+  <div class="modal-head"><h3>${id?t('editProduct'):t('newProduct')}</h3><button class="modal-x" onclick="closeModal()">×</button></div>
+  <div class="modal-body"><div id="pErr"></div>
+    <div class="field"><label>${t('name')}</label><input id="pName" value="${esc(p.name||'')}"></div>
+    <div class="field"><label>${t('description')}</label><textarea id="pDesc" rows="2">${esc(p.description||'')}</textarea></div>
+    <div class="two">
+      <div class="field"><label>${t('category')}</label>
+        <select id="pCat">${['Fertilizers','Irrigation','Pesticides','Equipment','Seeds','Other'].map(c=>`<option ${p.category===c?'selected':''}>${c}</option>`).join('')}</select></div>
+      <div class="field"><label>${t('priceDt')}</label><input id="pPrice" type="number" step="0.001" value="${p.price||''}"></div></div>
+    <div class="two">
+      <div class="field"><label>${t('partnerName')}</label><input id="pPartner" value="${esc(p.partner_name||'')}"></div>
+      <div class="field"><label>${t('stock')}</label><input id="pStock" type="number" value="${p.stock_quantity||0}"></div></div>
+    <div class="field"><label>${t('imageUrl')}</label><input id="pImg" value="${esc(p.image_url||'')}" placeholder="https://..."></div>
+  </div>
+  <div class="modal-foot"><button class="btn ghost" onclick="closeModal()">${t('cancel')}</button>
+    <button class="btn" id="pSave" onclick="saveProduct('${id||''}')">${t('save')}</button></div>`);
+}
+async function saveProduct(id){
+  const name=document.getElementById('pName').value.trim();
+  const price=parseFloat(document.getElementById('pPrice').value);
+  if(!name||isNaN(price)){ document.getElementById('pErr').innerHTML=`<div class="err">${t('fillAll')}</div>`; return; }
+  const data={name,description:document.getElementById('pDesc').value,category:document.getElementById('pCat').value,
+    price,partner_name:document.getElementById('pPartner').value,stock_quantity:parseInt(document.getElementById('pStock').value)||0,
+    image_url:document.getElementById('pImg').value.trim(),emoji:'📦'};
+  const btn=document.getElementById('pSave'); btn.disabled=true; btn.textContent=t('working');
+  const ok= id? await upd('products',id,data) : await ins('products',{id:uid(),...data});
+  if(!ok){ btn.disabled=false; btn.textContent=t('save'); return; }
+  closeModal(); toast(t('productSaved'),'ok'); go('products');
+}
+async function deleteProduct(id){ if(!confirm(t('confirmDel')))return; if(await del('products',id)) toast(t('productDeleted')); go('products'); }
+
+/* ============================================================
+   BOOT
+   ============================================================ */
+function showConfigOverlay(){
+  const o=document.createElement('div'); o.id='cfg';
+  o.innerHTML=`<div class="box">
+    <h2>🌿 One quick step to finish setup</h2>
+    <p>This app needs your free Supabase keys so everyone shares the same accounts. Open <b>index.html</b> in a text editor and paste your two values near the top (look for "PASTE YOUR SUPABASE KEYS").</p>
+    <ol>
+      <li>Create a free project at <code>supabase.com</code></li>
+      <li>Run the included <code>supabase_setup.sql</code> in the SQL Editor</li>
+      <li>Copy your <code>Project URL</code> and <code>anon public</code> key</li>
+      <li>Paste them into <code>SUPABASE_URL</code> and <code>SUPABASE_ANON_KEY</code></li>
+      <li>Save, reopen this file — done!</li>
+    </ol>
+    <p style="margin-top:10px">Full walkthrough is in <b>SETUP_GUIDE.md</b>.</p>
+  </div>`;
+  document.body.appendChild(o);
+}
+
+(async function boot(){
+  setLang(lang);
+  if(!configured()){ showConfigOverlay(); return; }
+  try{ db = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY); }
+  catch(e){ showConfigOverlay(); return; }
+  const sid=localStorage.getItem('saleem_session');
+  if(sid){
+    const {data}=await db.from('profiles').select('*').eq('id',sid).maybeSingle();
+    if(data){ enter(data); }
+  }
+})();
+</script>
+</body>
+</html>
