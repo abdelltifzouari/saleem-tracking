@@ -136,8 +136,8 @@ a{color:var(--green);text-decoration:none}
 .bar i{display:block;height:100%;background:var(--green);border-radius:6px;transition:width .6s}
 .bar.gold i{background:var(--gold)}
 
-.offer-img{height:158px;background:var(--green-l);display:grid;place-items:center;font-size:58px;position:relative}
-.offer-img img{width:100%;height:100%;object-fit:cover}
+.offer-img{height:158px;background:var(--green-l);display:grid;place-items:center;font-size:58px;position:relative;overflow:hidden}
+.offer-img img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
 .offer-img .q{position:absolute;top:10px;left:10px;background:rgba(255,255,255,.95);padding:4px 9px;border-radius:20px;font-size:12px;font-weight:700;color:var(--amber)}
 .offer-body{padding:15px}
 .offer-body h3{font-size:16px}
@@ -185,8 +185,8 @@ table.tbl tr:last-child td{border-bottom:none}
 .two{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .kv{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px dashed var(--line);font-size:14px}
 .kv:last-child{border:none}.kv b{font-weight:700}
-.imgprev{height:150px;border:1.5px dashed var(--line);border-radius:11px;display:grid;place-items:center;color:var(--muted);font-size:13px;overflow:hidden;margin-top:6px}
-.imgprev img{width:100%;height:100%;object-fit:cover}
+.imgprev{position:relative;height:150px;border:1.5px dashed var(--line);border-radius:11px;display:grid;place-items:center;color:var(--muted);font-size:13px;overflow:hidden;margin-top:6px}
+.imgprev img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
 
 .drawer-bg{position:fixed;inset:0;background:rgba(15,35,22,.5);z-index:100}
 .drawer{position:fixed;top:0;right:0;width:400px;max-width:92vw;height:100%;background:#fff;z-index:101;box-shadow:-8px 0 30px rgba(0,0,0,.15);display:flex;flex-direction:column;animation:slide .22s}
@@ -972,7 +972,10 @@ async function renderProducts(){
           <button class="btn sm danger" style="flex:1" onclick="deleteProduct('${p.id}')">${t('del')}</button></div>
       </div></div>`).join('')}</div>`;
 }
+let productImgData='';
+function previewProductImg(inp){ const f=inp.files[0]; if(!f)return; const r=new FileReader(); r.onload=e=>{productImgData=e.target.result; document.getElementById('pPrev').innerHTML=`<img src="${productImgData}">`;}; r.readAsDataURL(f); }
 function openProductModal(id){
+  productImgData='';
   const p=id? PRODUCTS.find(x=>x.id===id)||{} : {};
   modal(`
   <div class="modal-head"><h3>${id?t('editProduct'):t('newProduct')}</h3><button class="modal-x" onclick="closeModal()">×</button></div>
@@ -986,6 +989,9 @@ function openProductModal(id){
     <div class="two">
       <div class="field"><label>${t('partnerName')}</label><input id="pPartner" value="${esc(p.partner_name||'')}"></div>
       <div class="field"><label>${t('stock')}</label><input id="pStock" type="number" value="${p.stock_quantity||0}"></div></div>
+    <div class="field"><label>${t('photo')}</label>
+      <input type="file" accept="image/*" onchange="previewProductImg(this)">
+      <div class="imgprev" id="pPrev">${p.image_url?`<img src="${esc(p.image_url)}">`:'🖼️'}</div></div>
     <div class="field"><label>${t('imageUrl')}</label><input id="pImg" value="${esc(p.image_url||'')}" placeholder="https://..."></div>
   </div>
   <div class="modal-foot"><button class="btn ghost" onclick="closeModal()">${t('cancel')}</button>
@@ -997,7 +1003,7 @@ async function saveProduct(id){
   if(!name||isNaN(price)){ document.getElementById('pErr').innerHTML=`<div class="err">${t('fillAll')}</div>`; return; }
   const data={name,description:document.getElementById('pDesc').value,category:document.getElementById('pCat').value,
     price,partner_name:document.getElementById('pPartner').value,stock_quantity:parseInt(document.getElementById('pStock').value)||0,
-    image_url:document.getElementById('pImg').value.trim(),emoji:'📦'};
+    image_url:productImgData||document.getElementById('pImg').value.trim(),emoji:'📦'};
   const btn=document.getElementById('pSave'); btn.disabled=true; btn.textContent=t('working');
   const ok= id? await upd('products',id,data) : await ins('products',{id:uid(),...data});
   if(!ok){ btn.disabled=false; btn.textContent=t('save'); return; }
