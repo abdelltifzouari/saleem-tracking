@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Saleem Tracking</title>
+<title>Agrotracking</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@600;700;800&display=swap" rel="stylesheet">
@@ -19,7 +19,7 @@
   --radius:18px;
 }
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'Inter','Segoe UI',system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--ink);line-height:1.5}
+body{font-family:'Avenir Next','Avenir','Inter','Segoe UI',system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--ink);line-height:1.5}
 .hidden{display:none!important}
 button{font-family:inherit;cursor:pointer;border:none;background:none}
 input,select,textarea{font-family:inherit;font-size:14px}
@@ -226,10 +226,10 @@ table.tbl tr:last-child td{border-bottom:none}
    KOOFIN BRAND LAYER — appearance enhancements (loaded last)
    ============================================================ */
 /* Typography: geometric brand type for headings + wordmark */
-.brand{font-family:'Poppins',sans-serif;font-weight:800;letter-spacing:.4px}
+.brand{font-family:'Avenir Next','Avenir','Poppins',sans-serif;font-weight:800;letter-spacing:.4px}
 h1,h2,h3,.stat-card .n,.offer-body .price,.ring .inner b,.page-head h1,.modal-head h3,.drawer .dh h3{
-  font-family:'Poppins',sans-serif;letter-spacing:-.2px}
-.hero-h{font-family:'Poppins',sans-serif;font-weight:800;letter-spacing:-.5px}
+  font-family:'Avenir Next','Avenir','Poppins',sans-serif;letter-spacing:-.2px}
+.hero-h{font-family:'Avenir Next','Avenir','Poppins',sans-serif;font-weight:800;letter-spacing:-.5px}
 
 /* Deep-teal hero with subtle furrow pattern + brighter accents */
 .auth-hero{background:
@@ -306,7 +306,7 @@ h1,h2,h3,.stat-card .n,.offer-body .price,.ring .inner b,.page-head h1,.modal-he
 <!-- ========== AUTH SCREEN ========== -->
 <div id="authScreen">
   <div class="auth-hero">
-    <div class="brand"><span class="leaf"><svg class="mark" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><circle class="mk-a" cx="60" cy="60" r="58"/><path class="mk-b" d="M37 47a23 23 0 0 1 46 0z"/><path class="mk-line" d="M25 64 Q60 50 95 64"/><path class="mk-line" d="M23 79 Q60 64 97 79"/><path class="mk-line" d="M28 93 Q60 80 92 93"/></svg></span> Saleem Tracking</div>
+    <div class="brand"><span class="leaf"><svg class="mark" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><circle class="mk-a" cx="60" cy="60" r="58"/><path class="mk-b" d="M37 47a23 23 0 0 1 46 0z"/><path class="mk-line" d="M25 64 Q60 50 95 64"/><path class="mk-line" d="M23 79 Q60 64 97 79"/><path class="mk-line" d="M28 93 Q60 80 92 93"/></svg></span> Agrotracking</div>
     <div class="hero-tag">Transparency Product Quality</div>
     <div class="hero-h" data-t="heroH"></div>
     <div class="hero-sub" data-t="heroSub"></div>
@@ -328,10 +328,6 @@ h1,h2,h3,.stat-card .n,.offer-body .price,.ring .inner b,.page-head h1,.modal-he
       <div class="field"><label data-t="pwd"></label><input id="liPw" type="password" placeholder="••••••••"></div>
       <button class="btn" id="liBtn" onclick="doLogin()" data-t="signIn"></button>
       <div class="switch-line"><span data-t="noAcc"></span> <b onclick="showSignup()" data-t="signUpNow"></b></div>
-      <div class="demo-box">
-        <b data-t="demoT"></b>
-        <span data-t="demoFarmer"></span>: <code>farmer_ali</code> &nbsp; <span data-t="demoBuyer"></span>: <code>buyer_eu</code> &nbsp; Admin: <code>saleem_admin</code>
-      </div>
     </div>
     <div id="signupView" class="hidden">
       <h2 data-t="createAcc"></h2>
@@ -356,7 +352,7 @@ h1,h2,h3,.stat-card .n,.offer-body .price,.ring .inner b,.page-head h1,.modal-he
 <!-- ========== APP ========== -->
 <div id="app" class="hidden">
   <div class="topbar">
-    <div class="brand"><span class="leaf"><svg class="mark" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><circle class="mk-a" cx="60" cy="60" r="58"/><path class="mk-b" d="M37 47a23 23 0 0 1 46 0z"/><path class="mk-line" d="M25 64 Q60 50 95 64"/><path class="mk-line" d="M23 79 Q60 64 97 79"/><path class="mk-line" d="M28 93 Q60 80 92 93"/></svg></span> Saleem</div>
+    <div class="brand"><span class="leaf"><svg class="mark" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><circle class="mk-a" cx="60" cy="60" r="58"/><path class="mk-b" d="M37 47a23 23 0 0 1 46 0z"/><path class="mk-line" d="M25 64 Q60 50 95 64"/><path class="mk-line" d="M23 79 Q60 64 97 79"/><path class="mk-line" d="M28 93 Q60 80 92 93"/></svg></span> Agrotracking</div>
     <div class="nav" id="nav"></div>
     <div class="lang-switch">
       <button id="lsEn" class="on" onclick="setLang('en')">EN</button>
@@ -390,14 +386,14 @@ const T = {
   heroH:"Trace every crop from Tunisian soil to the European table.",
   heroSub:"Quality traceability and a direct export marketplace connecting farmers and buyers with full transparency.",
   pill1:"🛰️ Crop Tracking",pill2:"🇪🇺 EU Passports",pill3:"🤝 Direct Trade",pill4:"⭐ Quality Ratings",
-  welcome:"Welcome back",loginLead:"Sign in to your Saleem account",accId:"Account ID / Username",pwd:"Password",
+  welcome:"Welcome back",loginLead:"Sign in to your Agrotracking account",accId:"Account ID / Username",pwd:"Password",
   signIn:"Sign In",noAcc:"No account?",signUpNow:"Sign up",demoT:"Try these demo accounts (password: 1234)",
-  demoFarmer:"Farmer",demoBuyer:"Buyer",createAcc:"Create your account",signupLead:"Join the Saleem network",
+  demoFarmer:"Farmer",demoBuyer:"Buyer",createAcc:"Create your account",signupLead:"Join the Agrotracking network",
   farmer:"Farmer",buyer:"Buyer",fullName:"Full name",location:"Location / Region",email:"Email",createBtn:"Create account",
   haveAcc:"Already have an account?",signInNow:"Sign in",farmerIdHint:"Your unique platform handle used to log in.",
   buyerIdHint:"Pick a username to log in with.",username:"Username",
-  navTracking:"Saleem Tracking",navMarket:"Marketplace",navMyOffers:"My Offers",navRequests:"Received Requests",
-  navShop:"Saleem Market",navPending:"Pending Offers",navProducts:"Products",navMyReq:"My Purchase Requests",
+  navTracking:"Agrotracking",navMarket:"Marketplace",navMyOffers:"My Offers",navRequests:"Received Requests",
+  navShop:"Agrotracking Market",navPending:"Pending Offers",navProducts:"Products",navMyReq:"My Purchase Requests",
   cropsTracked:"Crops tracked",avgRating:"Avg crop rating",euPass:"EU passports",addOffer:"+ Add an offer",
   currentCrop:"Current crop",cropHistory:"Crop history",treatAcc:"Treatment accomplishment",adviceFol:"Advice followed",
   exportR:"Export readiness",noCrops:"No crops tracked yet.",generalScore:"Score",
@@ -411,13 +407,13 @@ const T = {
   shopLead:"Quality farm inputs & equipment from our partners",addCart:"Add to cart",inStock:"in stock",partner:"Partner",
   cart:"Cart",emptyCart:"Your cart is empty",subtotal:"Subtotal",vat:"VAT (19%)",delivery:"Delivery",
   checkout:"Checkout",orderOk:"Order confirmed!",orderRef:"Reference",keepShopping:"Keep shopping",
-  marketLead:"Approved export offers from Saleem farmers",noMarket:"No approved offers available yet.",
+  marketLead:"Approved export offers from Agrotracking farmers",noMarket:"No approved offers available yet.",
   all:"All",requestBuy:"Request to Buy",viewDetails:"View details",qualityScore:"Quality score",
   perUnit:"per unit",available:"Available",treatments:"Treatments",requestQ:"Request quantity",
   sendReq:"Send request",reqSent:"Purchase request sent!",myReqLead:"Status of your purchase requests",
   noMyReq:"You have not requested any offers yet.",crop:"Crop",
   pendingLead:"Review and moderate farmer submissions",noPending:"No offers awaiting review. 🎉",
-  productsLead:"Manage Saleem Market catalog",addProduct:"+ Add product",editProduct:"Edit product",newProduct:"New product",
+  productsLead:"Manage Agrotracking Market catalog",addProduct:"+ Add product",editProduct:"Edit product",newProduct:"New product",
   name:"Name",description:"Description",priceDt:"Price (DT)",stock:"Stock",imageUrl:"Image URL (optional)",
   partnerName:"Partner name",save:"Save",edit:"Edit",del:"Delete",confirmDel:"Delete this product?",
   loggedOut:"Signed out",welcomeBack:"Welcome back",accCreated:"Account created — welcome!",
@@ -433,14 +429,14 @@ const T = {
   heroH:"Tracez chaque récolte du sol tunisien à la table européenne.",
   heroSub:"Traçabilité qualité et marché d'export direct reliant agriculteurs et acheteurs en toute transparence.",
   pill1:"🛰️ Suivi des cultures",pill2:"🇪🇺 Passeports UE",pill3:"🤝 Commerce direct",pill4:"⭐ Notes qualité",
-  welcome:"Bon retour",loginLead:"Connectez-vous à votre compte Saleem",accId:"Identifiant / Nom d'utilisateur",pwd:"Mot de passe",
+  welcome:"Bon retour",loginLead:"Connectez-vous à votre compte Agrotracking",accId:"Identifiant / Nom d'utilisateur",pwd:"Mot de passe",
   signIn:"Se connecter",noAcc:"Pas de compte ?",signUpNow:"S'inscrire",demoT:"Comptes de démo (mot de passe : 1234)",
-  demoFarmer:"Agriculteur",demoBuyer:"Acheteur",createAcc:"Créez votre compte",signupLead:"Rejoignez le réseau Saleem",
+  demoFarmer:"Agriculteur",demoBuyer:"Acheteur",createAcc:"Créez votre compte",signupLead:"Rejoignez le réseau Agrotracking",
   farmer:"Agriculteur",buyer:"Acheteur",fullName:"Nom complet",location:"Localisation / Région",email:"E-mail",createBtn:"Créer le compte",
   haveAcc:"Déjà un compte ?",signInNow:"Se connecter",farmerIdHint:"Votre identifiant unique pour vous connecter.",
   buyerIdHint:"Choisissez un nom d'utilisateur pour vous connecter.",username:"Nom d'utilisateur",
-  navTracking:"Suivi Saleem",navMarket:"Marché",navMyOffers:"Mes offres",navRequests:"Demandes reçues",
-  navShop:"Saleem Market",navPending:"Offres en attente",navProducts:"Produits",navMyReq:"Mes demandes d'achat",
+  navTracking:"Agrotracking",navMarket:"Marché",navMyOffers:"Mes offres",navRequests:"Demandes reçues",
+  navShop:"Agrotracking Market",navPending:"Offres en attente",navProducts:"Produits",navMyReq:"Mes demandes d'achat",
   cropsTracked:"Cultures suivies",avgRating:"Note moyenne",euPass:"Passeports UE",addOffer:"+ Ajouter une offre",
   currentCrop:"Culture actuelle",cropHistory:"Historique des cultures",treatAcc:"Traitements accomplis",adviceFol:"Conseils suivis",
   exportR:"Prêt à l'export",noCrops:"Aucune culture suivie.",generalScore:"Score",
@@ -454,13 +450,13 @@ const T = {
   shopLead:"Intrants et équipements de qualité de nos partenaires",addCart:"Ajouter",inStock:"en stock",partner:"Partenaire",
   cart:"Panier",emptyCart:"Votre panier est vide",subtotal:"Sous-total",vat:"TVA (19%)",delivery:"Livraison",
   checkout:"Commander",orderOk:"Commande confirmée !",orderRef:"Référence",keepShopping:"Continuer",
-  marketLead:"Offres d'export approuvées des agriculteurs Saleem",noMarket:"Aucune offre approuvée disponible.",
+  marketLead:"Offres d'export approuvées des agriculteurs Agrotracking",noMarket:"Aucune offre approuvée disponible.",
   all:"Tout",requestBuy:"Demander à acheter",viewDetails:"Voir détails",qualityScore:"Score qualité",
   perUnit:"par unité",available:"Disponible",treatments:"Traitements",requestQ:"Quantité demandée",
   sendReq:"Envoyer la demande",reqSent:"Demande d'achat envoyée !",myReqLead:"Statut de vos demandes d'achat",
   noMyReq:"Vous n'avez demandé aucune offre.",crop:"Culture",
   pendingLead:"Examinez et modérez les soumissions",noPending:"Aucune offre à examiner. 🎉",
-  productsLead:"Gérez le catalogue Saleem Market",addProduct:"+ Ajouter produit",editProduct:"Modifier produit",newProduct:"Nouveau produit",
+  productsLead:"Gérez le catalogue Agrotracking Market",addProduct:"+ Ajouter produit",editProduct:"Modifier produit",newProduct:"Nouveau produit",
   name:"Nom",description:"Description",priceDt:"Prix (DT)",stock:"Stock",imageUrl:"URL image (optionnel)",
   partnerName:"Nom partenaire",save:"Enregistrer",edit:"Modifier",del:"Supprimer",confirmDel:"Supprimer ce produit ?",
   loggedOut:"Déconnecté",welcomeBack:"Bon retour",accCreated:"Compte créé — bienvenue !",
@@ -867,7 +863,7 @@ function setQty(id,d){ const c=cart.find(x=>x.id===id); if(!c)return; c.qty+=d; 
 function removeItem(id){ cart=cart.filter(x=>x.id!==id); updateCartCount(); openCart(); }
 async function checkout(){
   const sub=cart.reduce((s,c)=>s+c.price*c.qty,0), vat=sub*0.19, delivery=25, total=sub+vat+delivery;
-  const ref='SLM-'+Date.now().toString(36).toUpperCase().slice(-6);
+  const ref='AGT-'+Date.now().toString(36).toUpperCase().slice(-6);
   const ok=await ins('orders',{id:uid(),farmer_id:current.id,ref,items:cart,subtotal:sub,vat,delivery,total,created_at:nowISO()});
   if(!ok) return;
   cart=[]; updateCartCount();
